@@ -35,6 +35,11 @@ public class DbHubDatabase {
     }
 
     public DbHubDatabase closeConnection(){
+        try {
+            this.asyncHttpClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.asyncHttpClient = null;
         return this;
     }
@@ -121,6 +126,100 @@ public class DbHubDatabase {
                     .exceptionally(x -> Optional.empty());
         }else{
             CompletableFuture<Optional<List<String>>> completableFuture = new CompletableFuture<>();
+            completableFuture.complete(Optional.empty());
+            return completableFuture;
+        }
+    }
+
+    public CompletableFuture<Optional<String>> getWebPage(){
+        if (asyncHttpClient != null) {
+            return asyncHttpClient
+                    .prepareGet("https://api.dbhub.io/v1/webpage")
+                    .addHeader("Content-Type", "multipart/form-data")
+                    .setBodyParts(List.of(new StringPart("apikey", this.apikey), new StringPart("dbowner", this.dbowner), new StringPart("dbname", this.dbname)))
+                    .execute()
+                    .toCompletableFuture()
+                    .thenApply(x ->Optional.of(new JSONObject(x.getResponseBody(StandardCharsets.UTF_8)).getString("web_page")))
+                    .exceptionally(x -> Optional.empty());
+        }else{
+            CompletableFuture<Optional<String>> completableFuture = new CompletableFuture<>();
+            completableFuture.complete(Optional.empty());
+            return completableFuture;
+        }
+    }
+
+    public CompletableFuture<Optional<List<String>>> getViews(){
+        if (asyncHttpClient != null) {
+            return asyncHttpClient
+                    .prepareGet("https://api.dbhub.io/v1/views")
+                    .addHeader("Content-Type", "multipart/form-data")
+                    .setBodyParts(List.of(new StringPart("apikey", this.apikey), new StringPart("dbowner", this.dbowner), new StringPart("dbname", this.dbname)))
+                    .execute()
+                    .toCompletableFuture()
+                    .thenApply(x ->Optional.of(new JSONArray(x.getResponseBody(StandardCharsets.UTF_8)).toList().stream().map(y -> (String) y).collect(Collectors.toList())))
+                    .exceptionally(x -> Optional.empty());
+        }else{
+            CompletableFuture<Optional<List<String>>> completableFuture = new CompletableFuture<>();
+            completableFuture.complete(Optional.empty());
+            return completableFuture;
+        }
+    }
+
+    public CompletableFuture<Optional<List<Release>>> getReleases(){
+        if (asyncHttpClient != null) {
+            return asyncHttpClient
+                    .prepareGet("https://api.dbhub.io/v1/releases")
+                    .addHeader("Content-Type", "multipart/form-data")
+                    .setBodyParts(List.of(new StringPart("apikey", this.apikey), new StringPart("dbname", this.dbname), new StringPart("dbowner", this.dbowner)))
+                    .execute()
+                    .toCompletableFuture()
+                    .thenApply(x -> {
+                        final JSONObject jsonObject = new JSONObject(x.getResponseBody(StandardCharsets.UTF_8));
+                        final List<Release> releases = jsonObject.keySet().stream().map(key ->{
+                            final JSONObject object = jsonObject.getJSONObject(key);
+                            final Release release = new Release();
+                            release.setName(key);
+                            release.setAuthor(object.getString("name"));
+                            release.setDate(object.getString("date"));
+                            release.setCommit(object.getString("commit"));
+                            release.setDescription(object.getString("description"));
+                            release.setEmail(object.getString("email"));
+                            release.setSize(object.getInt("size"));
+                            return release;
+                        }).collect(Collectors.toList());
+                        return Optional.of(releases);
+                    }).exceptionally(x -> Optional.empty());
+        }else{
+            CompletableFuture<Optional<List<Release>>> completableFuture = new CompletableFuture<>();
+            completableFuture.complete(Optional.empty());
+            return completableFuture;
+        }
+    }
+
+    public CompletableFuture<Optional<List<Tag>>> getTags(){
+        if (asyncHttpClient != null) {
+            return asyncHttpClient
+                    .prepareGet("https://api.dbhub.io/v1/tags")
+                    .addHeader("Content-Type", "multipart/form-data")
+                    .setBodyParts(List.of(new StringPart("apikey", this.apikey), new StringPart("dbname", this.dbname), new StringPart("dbowner", this.dbowner)))
+                    .execute()
+                    .toCompletableFuture()
+                    .thenApply(x -> {
+                        final JSONObject jsonObject = new JSONObject(x.getResponseBody(StandardCharsets.UTF_8));
+                        final List<Tag> tags = jsonObject.keySet().stream().map(key ->{
+                            final JSONObject object = jsonObject.getJSONObject(key);
+                            final Tag tag = new Tag();
+                            tag.setDate(object.getString("date"));
+                            tag.setCommit(object.getString("commit"));
+                            tag.setDescription(object.getString("description"));
+                            tag.setEmail(object.getString("email"));
+                            tag.setName(key);
+                            return tag;
+                        }).collect(Collectors.toList());
+                        return Optional.of(tags);
+                    }).exceptionally(x -> Optional.empty());
+        }else{
+            CompletableFuture<Optional<List<Tag>>> completableFuture = new CompletableFuture<>();
             completableFuture.complete(Optional.empty());
             return completableFuture;
         }
