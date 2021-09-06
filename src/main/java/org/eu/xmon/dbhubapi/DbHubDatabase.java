@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
 
+
 public class DbHubDatabase {
     private String apikey;
     private String dbowner;
@@ -374,6 +375,40 @@ public class DbHubDatabase {
             CompletableFuture<Optional<List<Branche>>> completableFuture = new CompletableFuture<>();
             completableFuture.complete(Optional.empty());
             return completableFuture;
+        }
+    }
+
+    public static final class Builder{
+        private String apikey;
+        private String dbowner;
+        private String dbname;
+
+        public Builder apikey(final String apikey){
+            this.apikey = apikey;
+            return this;
+        }
+
+        public Builder dbowner(final String dbowner){
+            this.dbowner = dbowner;
+            return this;
+        }
+
+        public Builder dbname(final String dbname){
+            this.dbname = dbname;
+            return this;
+        }
+
+        public DbHubDatabase build(){
+            if (apikey.isEmpty()){
+                throw new IllegalStateException("Apikey cannot be empty");
+            }
+            if (dbname.isEmpty()){
+                throw new IllegalStateException("DbName cannot be empty");
+            }
+            if (dbowner.isEmpty()){
+                throw new IllegalStateException("DbOwner cannot be empty");
+            }
+            return new DbHubDatabase(this.apikey, this.dbowner, this.dbname);
         }
     }
 }
