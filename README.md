@@ -28,6 +28,18 @@ dbHubDatabase.getTables().thenAccept(System.out::println);
 
 //Upload a database from disk
 dbHubDatabase.upload(new File("database.db"), "master", "Test from api").thenAccept(System.out::println);
+
+//Returns information about all releases
+dbHubDatabase.getReleases().thenAccept(System.out::println);
+
+//Return link to webpage
+dbHubDatabase.getWebPage().thenAccept(System.out::println);
+
+//Returns information about all tags
+dbHubDatabase.getTags().thenAccept(System.out::println);
+
+//Close connection
+dbHubDatabase.closeConnection();
 ```
 
 # Maven
