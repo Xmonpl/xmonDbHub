@@ -26,7 +26,7 @@ dbHubDatabase.sendQuery("SELECT * FROM `users`").thenAccept(System.out::println)
 //Returns information about all available tables
 dbHubDatabase.getTables().thenAccept(System.out::println);
 
-//Upload a database from disk (Not working now ;c)
+//Upload a database from disk
 dbHubDatabase.upload(new File("database.db"), "master", "Test from api").thenAccept(System.out::println);
 ```
 
