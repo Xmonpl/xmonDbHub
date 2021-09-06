@@ -10,6 +10,12 @@ final DbHubDatabase dbHubDatabase = new DbHubDatabase.Builder()
                 .dbname("DB_NAME")
                 .dbowner("DB_OWNER")
                 .build();
+//or
+final DbHubDatabase dbHubDatabase = DbHubDatabase.builder()
+                .apikey("API_KEY")
+                .dbname("DB_NAME")
+                .dbowner("DB_OWNER")
+                .build();
 
 //Returns information about all available Branches
 dbHubDatabase.getBranches().thenAccept(System.out::println);
