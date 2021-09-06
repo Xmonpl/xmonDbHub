@@ -377,7 +377,9 @@ public class DbHubDatabase {
             return completableFuture;
         }
     }
-
+    public static Builder builder() {
+        return new Builder();
+    }
     public static final class Builder{
         private String apikey;
         private String dbowner;
@@ -398,9 +400,6 @@ public class DbHubDatabase {
             return this;
         }
 
-        public static Builder builder() {
-            return new Builder();
-        }
 
         public DbHubDatabase build(){
             if (apikey.isEmpty()){
