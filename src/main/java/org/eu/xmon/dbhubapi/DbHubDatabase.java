@@ -398,6 +398,10 @@ public class DbHubDatabase {
             return this;
         }
 
+        public static Builder builder() {
+            return new Builder();
+        }
+
         public DbHubDatabase build(){
             if (apikey.isEmpty()){
                 throw new IllegalStateException("Apikey cannot be empty");
