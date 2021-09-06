@@ -3,7 +3,13 @@ A Java library for accessing and using SQLite databases on DBHub.io
 
 # How to use?
 ```java
-final DbHubDatabase dbHubDatabase = new DbHubDatabase("API_KEY", "OWNERDB_NAME", "DB_NAME");
+final DbHubDatabase dbHubDatabase = new DbHubDatabase("API_KEY", "DB_OWNER", "DB_NAME");
+//or
+final DbHubDatabase dbHubDatabase = new DbHubDatabase.Builder()
+                .apikey("API_KEY")
+                .dbname("DB_NAME")
+                .dbowner("DB_OWNER")
+                .build();
 
 //Returns information about all available Branches
 dbHubDatabase.getBranches().thenAccept(System.out::println);
