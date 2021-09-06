@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static org.asynchttpclient.Dsl.asyncHttpClient;
@@ -24,7 +25,6 @@ public class DbHubDatabase {
     private String apikey;
     private String dbowner;
     private String dbname;
-    private boolean open;
     private AsyncHttpClient asyncHttpClient;
 
     public DbHubDatabase(final String apikey, final String dbowner, final String dbname){
@@ -33,7 +33,6 @@ public class DbHubDatabase {
         this.dbname = dbname;
         this.asyncHttpClient = asyncHttpClient();
     }
-
 
     public DbHubDatabase closeConnection(){
         this.asyncHttpClient = null;
@@ -165,31 +164,58 @@ public class DbHubDatabase {
             return completableFuture;
         }
     }
-    public CompletableFuture<String> upload(@NonNull File location, @NonNull String branch, @NonNull String commit_name) throws Exception {
+
+    public CompletableFuture<Status> upload(@NonNull File location, @NonNull String branch, @NonNull String commit_name){
         if (asyncHttpClient != null) {
-            final List<Part> parts = List.of(
-                    new StringPart("apikey", this.apikey),
-                    new StringPart("dbname", "test_db"),
-                    new StringPart("branch", branch),
-                    new StringPart("force", "true"),
-                    //new StringPart("commit_id", "a3915be4527ab4fb3e56f9a24d2578b3fe7c1e21c2abd906715bbe27d4844d1e"),
-                    new StringPart("public", "false"),
-                    new StringPart("commitmsg", "Example from api"),
-                    new StringPart("lastmodified", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(location.lastModified())),
-                    new FilePart("file", location, "application/x-sqlite3", StandardCharsets.UTF_8)
-            );
-            return asyncHttpClient
-                    .prepareGet("https://api.dbhub.io/v1/upload")
-                    .addHeader("Content-Type", "multipart/form-data")
-                    .setBodyParts(parts)
-                    .execute()
-                    .toCompletableFuture()
-                    .thenApply(x -> {
-                        System.out.println(x.getStatusCode());
-                        return x.getResponseBody();
-                    });
+            final Optional<List<Branche>> branches;
+            try {
+                branches = this.getBranches().get();
+                if (branches.isPresent()){
+                    final Optional<Branche> branche = branches.get().stream().filter(y -> y.getName().equals(branch)).findFirst();
+                    if (branche.isPresent()){
+                        final List<Part> parts = List.of(
+                                new StringPart("apikey", this.apikey),
+                                new StringPart("dbname", this.dbname),
+                                new StringPart("branch", branch),
+                                new StringPart("commit", branche.get().getCommit()),
+                                new StringPart("commitmsg", commit_name),
+                                new StringPart("lastmodified", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").format(location.lastModified())),
+                                new FilePart("file", location, "application/x-sqlite3", StandardCharsets.UTF_8)
+                        );
+                        return asyncHttpClient
+                                .prepareGet("https://api.dbhub.io/v1/upload")
+                                .addHeader("Content-Type", "multipart/form-data")
+                                .setBodyParts(parts)
+                                .execute()
+                                .toCompletableFuture()
+                                .thenApply(o -> {
+                                    if (o.getStatusCode() == 200){
+                                        return Status.OK;
+                                    }else{
+                                        System.out.println(o.getStatusCode());
+                                        System.out.println(o.getResponseBody());
+                                        return Status.ERROR;
+                                    }
+                                }).exceptionally(o -> Status.ERROR);
+                    }else{
+                        CompletableFuture<Status> completableFuture = new CompletableFuture<>();
+                        completableFuture.complete(Status.ERROR);
+                        return completableFuture;
+                    }
+                }else{
+                    CompletableFuture<Status> completableFuture = new CompletableFuture<>();
+                    completableFuture.complete(Status.ERROR);
+                    return completableFuture;
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                CompletableFuture<Status> completableFuture = new CompletableFuture<>();
+                completableFuture.complete(Status.ERROR);
+                return completableFuture;
+            }
         } else {
-            throw new Exception("Database Connection is't open");
+            CompletableFuture<Status> completableFuture = new CompletableFuture<>();
+            completableFuture.complete(Status.ERROR);
+            return completableFuture;
         }
     }
     public CompletableFuture<Status> download(@NonNull File location){
