@@ -55,19 +55,17 @@ dbHubDatabase.closeConnection();
 ```
 
 # Maven
-1. Authenticate to GitHub Packages. For more information, see [Authenticating with a personal access token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token)
-2. Add the package dependencies to the dependencies element of your project pom.xml file.
 ```xml
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+<repositories>
+	<repository>
+	    <id>jitpack.io</id>
+	    <url>https://jitpack.io</url>
+	</repository>
+</repositories>
 
-	<dependency>
-	    <groupId>com.github.Xmonpl</groupId>
-	    <artifactId>xmonDbHub</artifactId>
-	    <version>1.1-SNAPSHOT</version>
-	</dependency>
+<dependency>
+    <groupId>com.github.Xmonpl</groupId>
+    <artifactId>xmonDbHub</artifactId>
+    <version>1.1-SNAPSHOT</version>
+</dependency>
 ```
