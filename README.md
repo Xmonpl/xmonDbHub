@@ -1,6 +1,8 @@
 # xmonDbHub
 A Java library for accessing and using SQLite databases on DBHub.io
 
+Discord for help https://discord.gg/qyeDzjrfkv
+
 # How to use?
 ```java
 final DbHubDatabase dbHubDatabase = new DbHubDatabase("API_KEY", "DB_OWNER", "DB_NAME");
