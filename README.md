@@ -58,16 +58,15 @@ dbHubDatabase.closeConnection();
 
 # Maven
 ```xml
-<repositories>
-	<repository>
-	    <id>jitpack.io</id>
-	    <url>https://jitpack.io</url>
-	</repository>
-</repositories>
+<repository>
+  <id>xmon-repo-snapshots</id>
+  <name>Xmon Repository</name>
+  <url>https://repo.xmon.eu.org/snapshots</url>
+</repository>
 
 <dependency>
-    <groupId>com.github.Xmonpl</groupId>
-    <artifactId>xmonDbHub</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <groupId>org.eu.xmon</groupId>
+    <artifactId>dbhubapi</artifactId>
+    <version>1.2-SNAPSHOT</version>
 </dependency>
 ```
