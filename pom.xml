@@ -6,7 +6,7 @@
 
     <groupId>org.eu.xmon</groupId>
     <artifactId>dbhubapi</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -15,9 +15,9 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/Xmonpl/xmonDbHub</url>
+        <id>xmon-repo</id>
+        <name>Xmon Repository</name>
+        <url>https://repo.xmon.eu.org/snapshots</url>
         </repository>
     </distributionManagement>
 
@@ -28,7 +28,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>eu.org.xmon.licensewrapper.License</mainClass>
+                            <mainClass>eu.org.xmon.dbhubapi.DbHubDatabase</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
